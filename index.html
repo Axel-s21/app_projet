@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>glaciér.app</title>
+
+    <script src="JS\gps.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="appel-touch-icon" href="image\téléchargement__1_-removebg-preview.png">
+    <meta name="appel-mobile-web-app-status-bar" content="black">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="black">
+
+    <!-- Ajoutez les icônes pour les différentes tailles d'écran -->
+    <link rel="icon" href="image\téléchargement__1_-removebg-preview.png" sizes="72x72">
+    <link rel="icon" href="image\téléchargement__1_-removebg-preview.png" sizes="96x96">
+    <link rel="icon" href="image\téléchargement__1_-removebg-preview.png" sizes="128x128">
+    
+    <!-- Ajoutez le service worker pour la gestion du cache et du mode hors ligne -->
+    <script src="JS\service-worker.js" defer></script>
+
+</head>
+
+<body>
+    <header>
+        <!-- Logo ou en-tête de l'application -->
+        <h1>Ma glacière.app</h1>
+        <nav>
+            <!-- Menu de navigation ou boutons d'action -->
+
+        </nav>
+    </header>
+
+    <main>
+        <!-- Contenu principal de l'application -->
+        <section>
+            <h2>Acctivation du GPS</h2>
+            <p>Profitez d'une expérience utilisateur optimisée grâce à notre application web progressive.</p>
+            <input type="checkbox" id="gpsSwitch">
+            <p id="statusText"></p>
+        
+            <!-- Scripts JavaScript -->
+            <script>
+                // Fonction pour activer ou désactiver le GPS
+                function toggleGps() {
+                    var switchElem = document.getElementById('gpsSwitch');
+                    var statusElem = document.getElementById('statusText');
+        
+                    // Vérifier si le navigateur prend en charge la géolocalisation
+                    if (navigator.geolocation) {
+                        if (switchElem.checked) {
+                            // Activer la géolocalisation
+                            navigator.geolocation.watchPosition(
+                                function(position) {
+                                    // Succès: Obtenir la position de l'utilisateur en temps réel
+                                    console.log('Latitude:', position.coords.latitude);
+                                    console.log('Longitude:', position.coords.longitude);
+                                    // Vous pouvez également utiliser la position pour d'autres actions dans votre PWA
+                                    statusElem.textContent = 'La géolocalisation est activée.';
+                                },
+                                function(error) {
+                                    // Erreur: Gérer les erreurs de géolocalisation
+                                    console.error('Erreur de géolocalisation:', error);
+                                    statusElem.textContent = 'Erreur de géolocalisation: ' + error.message;
+                                }
+                            );
+                        } else {
+                            // Désactiver la géolocalisation
+                            navigator.geolocation.clearWatch(watchId);
+                            statusElem.textContent = 'La géolocalisation est désactivée.';
+                        }
+                    } else {
+                        // Géolocalisation non prise en charge dans ce navigateur
+                        console.error('La géolocalisation n\'est pas prise en charge dans ce navigateur.');
+                        statusElem.textContent = 'La géolocalisation n\'est pas prise en charge dans ce navigateur.';
+                    }
+                }
+        
+                // Lier la fonction de basculement de la géolocalisation au switch
+                document.getElementById('gpsSwitch').addEventListener('change', toggleGps);
+            </script>
+        </section>
+
+
+        <h1>Prise de notes</h1><!-- section pour note -->
+        <section>
+          <h2>Mes notes</h2>
+          <!-- ligne en bas pour des note systeme nn effasable -->
+          <li>Le bouton est là pour supprimer la note. --> <button class="">-</button></li>
+          <ul id="notesList">
+            <!-- ligne en bas pour des note systeme -->
+          </ul>
+
+          <h2>Ajouter une note</h2>
+          <form id="noteForm">
+            <input type="text" id="noteInput" placeholder="Entrez une nouvelle note">
+            <button type="submit">Ajouter</button>
+          </form>
+        </section>
+        <script>
+          // Charger les notes depuis le stockage local lors du chargement de la page
+          window.addEventListener("load", function() {
+            var notesList = document.getElementById("notesList");
+            var notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes.forEach(function(note) {
+              var noteItem = document.createElement("li");
+              noteItem.textContent = note;
+              var deleteBtn = document.createElement("button");
+              deleteBtn.textContent = "-";//represent se qui a ecrit sur le bouton effaser
+              deleteBtn.classList.add("deleteBtn");
+              noteItem.appendChild(deleteBtn);
+              notesList.appendChild(noteItem);
+            });
+          });
+          document.getElementById("noteForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var noteInput = document.getElementById("noteInput");
+            var notesList = document.getElementById("notesList");
+            var newNote = document.createElement("li");
+            newNote.textContent = noteInput.value + " ";
+            // Ajouter un bouton de suppression à chaque nouvelle note
+            var deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "-";//represent se qui a ecrit sur le bouton effaser
+            deleteBtn.classList.add("deleteBtn");
+            newNote.appendChild(deleteBtn);
+            notesList.appendChild(newNote);
+            noteInput.value = "";
+            // Enregistrer les notes dans le stockage local
+            var notes = Array.from(notesList.getElementsByTagName("li")).map(function(noteItem) {
+              return noteItem.textContent.trim();
+            });
+            localStorage.setItem("notes", JSON.stringify(notes));
+          });
+          // Supprimer la note lorsqu'on clique sur le bouton de suppression
+          document.addEventListener("click", function(event) {
+            if (event.target.classList.contains("deleteBtn")) {
+              var noteItem = event.target.parentNode;
+              var notesList = document.getElementById("notesList");
+              notesList.removeChild(noteItem);
+      
+              // Mettre à jour le stockage local après la suppression de la note
+              var notes = Array.from(notesList.getElementsByTagName("li")).map(function(noteItem) {
+                return noteItem.textContent.trim();
+              });
+              localStorage.setItem("notes", JSON.stringify(notes));
+            }
+          });
+        </script>
+
+
+        <section> <!-- section fonctionnaliter -->
+            <h2>Fonctionnalités principales</h2>
+            <ul>
+                <li>Accessibilité hors ligne</li>
+                <li>Installation sur l'écran d'accueil</li>
+                <li>Notifications push</li>
+                <li>Mise en cache pour une performance optimale</li>
+            </ul>
+        </section>
+
+
+        <section><!-- section image -->
+            <img src="image\téléchargement__1_-removebg-preview.png">
+        </section>
+
+
+        <section><!-- section contacte -->
+            <h2>Contactez-nous</h2>
+            <p>Pour toute question ou commentaire, n'hésitez pas à nous contacter :</p>
+            <ul>
+                <li>Email : <a href="https://mail.google.com/mail/?tab=rm&authuser=0&ogbl">deheyn.axel@gmail.com</a></li>
+                <li>Formulaire de contact : <a href="page_contacte.html">Contactez-nous</a></li>
+            </ul>
+        </section>
+    </main>
+
+
+    <footer><!-- Pied de page de l'application -->
+        <p>Glaciér.app &copy; 2023. Tous droits réservés.</p>
+    </footer>
+</body>
+
+
+</html>
