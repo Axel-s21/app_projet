@@ -35,4 +35,13 @@ body {
 
 
     https://axel-s21.github.io/app_projet/
-    
+
+
+
+    Voici la commande Git équivalente pour mettre à jour des dossiers GitHub à partir de la ligne de commande :
+
+    Assurez-vous d'avoir les dernières modifications locales dans votre branche en utilisant la commande git pull.
+    Effectuez les modifications nécessaires dans vos dossiers locaux.
+    Utilisez la commande git add <nom_du_dossier_modifié> pour ajouter les modifications des dossiers que vous souhaitez mettre à jour.
+    Utilisez la commande git commit -m "Message de validation" pour valider vos modifications localement avec un message de validation.
+    Enfin, utilisez la commande git push pour pousser vos modifications vers le dépôt GitHub distant.
