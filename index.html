@@ -85,6 +85,28 @@
         </section>
 
 
+        <h1>Exemple d'application Web Bluetooth</h1>
+
+  <section>
+    <h2>Connexion Bluetooth</h2>
+    <button onclick="connectToDevice()">Connecter à l'appareil Bluetooth</button>
+  </section>
+
+  <script>
+    // Fonction pour connecter à l'appareil Bluetooth
+    function connectToDevice() {
+      navigator.bluetooth.requestDevice({ filters: [{ services: ['<VOTRE_SERVICE_BLUETOOTH_UUID>'] }] })
+        .then(device => {
+          console.log('Appareil Bluetooth sélectionné :', device);
+          // Connectez-vous à l'appareil Bluetooth ici
+          // ...
+        })
+        .catch(error => {
+          console.error('Erreur de connexion Bluetooth :', error);
+        });
+    }
+  </script>
+
         <h1>Prise de notes</h1><!-- section pour note -->
         <section>
           <h2>Mes notes</h2>
