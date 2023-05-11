@@ -38,11 +38,67 @@
         <!-- Contenu principal de l'application -->
         <section>
             <h2>Acctivation du GPS</h2>
-            <p>Profitez d'une expérience utilisateur optimisée grâce à notre application web progressive.</p>
+            <p>Cocher pour activer le GPS.</p>
             <input type="checkbox" id="gpsSwitch">
             <p id="statusText"></p>
         
-            <!-- Scripts JavaScript -->
+
+
+<!-- Scripts JavaScript connection BL2 -->
+            <script>
+              let device;
+              let characteristic;
+          
+              // Fonction pour connecter à l'appareil Bluetooth
+              function connectToDevice() {
+                navigator.bluetooth.requestDevice({ filters: [{ services: ['<VOTRE_SERVICE_BLUETOOTH_UUID>'] }] })
+                  .then(selectedDevice => {
+                    device = selectedDevice;
+                    console.log('Appareil Bluetooth sélectionné :', device);
+                    return device.gatt.connect();
+                  })
+                  .then(server => {
+                    console.log('Serveur GATT Bluetooth :', server);
+                    return server.getPrimaryService('<VOTRE_SERVICE_BLUETOOTH_UUID>');
+                  })
+                  .then(service => {
+                    console.log('Service Bluetooth :', service);
+                    return service.getCharacteristic('<VOTRE_CARACTÉRISTIQUE_BLUETOOTH_UUID>');
+                  })
+                  .then(char => {
+                    characteristic = char;
+                    console.log('Caractéristique Bluetooth :', characteristic);
+          
+                    // Envoi automatique des données GPS toutes les 10 secondes
+                    setInterval(sendGPSData, 10000);
+                  })
+                  .catch(error => {
+                    console.error('Erreur de connexion Bluetooth :', error);
+                  });
+              }
+          
+              // Fonction pour envoyer les données GPS
+              function sendGPSData() {
+                navigator.geolocation.getCurrentPosition(position => {
+                  const latitude = position.coords.latitude;
+                  const longitude = position.coords.longitude;
+                  const data = new Uint8Array([latitude, longitude]);
+          
+                  if (device && device.gatt.connected && characteristic) {
+                    characteristic.writeValue(data)
+                      .then(() => console.log('Données GPS envoyées avec succès !'))
+                      .catch(error => console.error('Erreur d\'envoi de données GPS :', error));
+                  }
+                });
+              }
+            </script>
+
+
+
+
+
+
+<!-- Scripts JavaScript connection BL2 -->
             <script>
                 // Fonction pour activer ou désactiver le GPS
                 function toggleGps() {
@@ -83,29 +139,49 @@
                 document.getElementById('gpsSwitch').addEventListener('change', toggleGps);
             </script>
         </section>
-
+        <script>
+          let device;
+      
+          // Fonction pour connecter à l'appareil Bluetooth
+          function connectToDevice() {
+            navigator.bluetooth.requestDevice({ filters: [{ services: ['<VOTRE_SERVICE_BLUETOOTH_UUID>'] }] })
+              .then(selectedDevice => {
+                device = selectedDevice;
+                console.log('Appareil Bluetooth sélectionné :', device);
+                return device.gatt.connect();
+              })
+              .then(server => {
+                console.log('Serveur GATT Bluetooth :', server);
+              })
+              .catch(error => {
+                console.error('Erreur de connexion Bluetooth :', error);
+              });
+          }
+      
+          // Fonction pour envoyer les données GPS
+          function sendGPSData() {
+            navigator.geolocation.getCurrentPosition(position => {
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+              const data = new Uint8Array([latitude, longitude]);
+      
+              if (device && device.gatt.connected) {
+                device.gatt.getPrimaryService('<VOTRE_SERVICE_BLUETOOTH_UUID>')
+                  .then(service => service.getCharacteristic('<VOTRE_CARACTÉRISTIQUE_BLUETOOTH_UUID>'))
+                  .then(characteristic => characteristic.writeValue(data))
+                  .then(() => console.log('Données GPS envoyées avec succès !'))
+                  .catch(error => console.error('Erreur d\'envoi de données GPS :', error));
+              }
+            });
+          }
+        </script>
 
         <h1>Bluetooth</h1>
 
   <section>
     <h2>Connexion Bluetooth</h2>
-    <button onclick="connectToDevice()">Connecter à l'appareil Bluetooth</button>
+    <button><a href="https://play.google.com/store/apps/details?id=com.punchthrough.lightblueexplorer&hl=fr&gl=US">Connecter à l'appareil Bluetooth </a></button>
   </section>
-
-  <script>
-    // Fonction pour connecter à l'appareil Bluetooth
-    function connectToDevice() {
-      navigator.bluetooth.requestDevice({ filters: [{ services: ['<VOTRE_SERVICE_BLUETOOTH_UUID>'] }] })
-        .then(device => {
-          console.log('Appareil Bluetooth sélectionné :', device);
-          // Connectez-vous à l'appareil Bluetooth ici
-          // ...
-        })
-        .catch(error => {
-          console.error('Erreur de connexion Bluetooth :', error);
-        });
-    }
-  </script>
 
         <h1>Prise de notes</h1><!-- section pour note -->
         <section>
