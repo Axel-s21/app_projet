@@ -45,14 +45,14 @@
         
 
 
-<!-- Scripts JavaScript connection BL2 -->
+<!-- Scripts JavaScript connection BL1 -->
             <script>
               let device;
               let characteristic;
           
               // Fonction pour connecter à l'appareil Bluetooth
               function connectToDevice() {
-                navigator.bluetooth.requestDevice({ filters: [{ services: ['<VOTRE_SERVICE_BLUETOOTH_UUID>'] }] })
+                navigator.bluetooth.requestDevice({ filters: [{ services: ['<00001800-1000-8000-00805f9b34fb>'] }] })
                   .then(selectedDevice => {
                     device = selectedDevice;
                     console.log('Appareil Bluetooth sélectionné :', device);
@@ -60,11 +60,11 @@
                   })
                   .then(server => {
                     console.log('Serveur GATT Bluetooth :', server);
-                    return server.getPrimaryService('<VOTRE_SERVICE_BLUETOOTH_UUID>');
+                    return server.getPrimaryService('<00001800-1000-8000-00805f9b34fb>');
                   })
                   .then(service => {
                     console.log('Service Bluetooth :', service);
-                    return service.getCharacteristic('<VOTRE_CARACTÉRISTIQUE_BLUETOOTH_UUID>');
+                    return service.getCharacteristic('<00002a00-0000-1000-8000-00805f9b34fb>');
                   })
                   .then(char => {
                     characteristic = char;
@@ -93,59 +93,14 @@
                 });
               }
             </script>
-
-
-
-
-
-
 <!-- Scripts JavaScript connection BL2 -->
-            <script>
-                // Fonction pour activer ou désactiver le GPS
-                function toggleGps() {
-                    var switchElem = document.getElementById('gpsSwitch');
-                    var statusElem = document.getElementById('statusText');
-        
-                    // Vérifier si le navigateur prend en charge la géolocalisation
-                    if (navigator.geolocation) {
-                        if (switchElem.checked) {
-                            // Activer la géolocalisation
-                            navigator.geolocation.watchPosition(
-                                function(position) {
-                                    // Succès: Obtenir la position de l'utilisateur en temps réel
-                                    console.log('Latitude:', position.coords.latitude);
-                                    console.log('Longitude:', position.coords.longitude);
-                                    // Vous pouvez également utiliser la position pour d'autres actions dans votre PWA
-                                    statusElem.textContent = 'La géolocalisation est activée.';
-                                },
-                                function(error) {
-                                    // Erreur: Gérer les erreurs de géolocalisation
-                                    console.error('Erreur de géolocalisation:', error);
-                                    statusElem.textContent = 'Erreur de géolocalisation: ' + error.message;
-                                }
-                            );
-                        } else {
-                            // Désactiver la géolocalisation
-                            navigator.geolocation.clearWatch(watchId);
-                            statusElem.textContent = 'La géolocalisation est désactivée.';
-                        }
-                    } else {
-                        // Géolocalisation non prise en charge dans ce navigateur
-                        console.error('La géolocalisation n\'est pas prise en charge dans ce navigateur.');
-                        statusElem.textContent = 'La géolocalisation n\'est pas prise en charge dans ce navigateur.';
-                    }
-                }
-        
-                // Lier la fonction de basculement de la géolocalisation au switch
-                document.getElementById('gpsSwitch').addEventListener('change', toggleGps);
-            </script>
         </section>
         <script>
           let device;
       
           // Fonction pour connecter à l'appareil Bluetooth
           function connectToDevice() {
-            navigator.bluetooth.requestDevice({ filters: [{ services: ['<VOTRE_SERVICE_BLUETOOTH_UUID>'] }] })
+            navigator.bluetooth.requestDevice({ filters: [{ services: ['<00001800-1000-8000-00805f9b34fb>'] }] })
               .then(selectedDevice => {
                 device = selectedDevice;
                 console.log('Appareil Bluetooth sélectionné :', device);
@@ -157,8 +112,8 @@
               .catch(error => {
                 console.error('Erreur de connexion Bluetooth :', error);
               });
-          }
-      
+
+            }
           // Fonction pour envoyer les données GPS
           function sendGPSData() {
             navigator.geolocation.getCurrentPosition(position => {
@@ -167,8 +122,8 @@
               const data = new Uint8Array([latitude, longitude]);
       
               if (device && device.gatt.connected) {
-                device.gatt.getPrimaryService('<VOTRE_SERVICE_BLUETOOTH_UUID>')
-                  .then(service => service.getCharacteristic('<VOTRE_CARACTÉRISTIQUE_BLUETOOTH_UUID>'))
+                device.gatt.getPrimaryService('<00001800-1000-8000-00805f9b34fb>')
+                  .then(service => service.getCharacteristic('<00002a00-0000-1000-8000-00805f9b34fb>'))
                   .then(characteristic => characteristic.writeValue(data))
                   .then(() => console.log('Données GPS envoyées avec succès !'))
                   .catch(error => console.error('Erreur d\'envoi de données GPS :', error));
